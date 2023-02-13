@@ -1,12 +1,12 @@
 let tableNumber = null;
 
 AFRAME.registerComponent("marker-handler", {
-  init: function () {
+  init: async function () {
     if (tableNumber === null) {
       this.askTableNumber();
     }
 
-    var dishes = this.getDishes();
+    var dishes = await this.getDishes();
     this.el.addEventListener("markerFound", () => {
       console.log("marker is found!");
       if (tableNumber !== null) {
@@ -42,7 +42,7 @@ AFRAME.registerComponent("marker-handler", {
     let days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
 
     var dish = dishes.filter(dish => dish.id === markerId)[0];
-    console.log(dish.unavailable_days)
+    console.log(dish)
     if (dish.unavailable_days.includes(days["monday"])) {
       swal({
         icon: "warning",
@@ -123,7 +123,9 @@ AFRAME.registerComponent("marker-handler", {
     buttonDiv.style.display = "none";
   },
   getDishes: async function () {
+    // console.log("running")
     return await firebase.firestore().collection("dishes").get().then(snap => {
+      // console.log(snap.docs.map(doc => doc.data()))
       return snap.docs.map(doc => doc.data())
     });
   },
